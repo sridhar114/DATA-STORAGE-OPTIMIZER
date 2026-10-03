@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#133b32">
+  <title>Storage Optimizer</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #16342d;
+      --muted: #64736d;
+      --line: #d9e2dc;
+      --paper: #f5f8f5;
+      --white: #fff;
+      --green: #17664f;
+      --green-dark: #133b32;
+      --lime: #d8f276;
+      --blue: #365f9d;
+      --red: #a53f35;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      font-synthesis: none;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 0;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image: radial-gradient(#dce6df 0.75px, transparent 0.75px);
+      background-size: 15px 15px;
+    }
+
+    button, input { font: inherit; }
+
+    .topbar {
+      min-height: 64px;
+      padding: 0 clamp(20px, 5vw, 72px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: white;
+      background: var(--green-dark);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      color: var(--green-dark);
+      background: var(--lime);
+      border-radius: 6px;
+      font-size: 18px;
+    }
+
+    .top-note {
+      color: #c4d6cd;
+      font-size: 13px;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 54px 0 72px;
+    }
+
+    .intro {
+      max-width: 700px;
+      margin-bottom: 34px;
+      animation: arrive 450ms ease-out both;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+
+    h1, h2, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 12px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(34px, 5vw, 54px);
+      font-weight: 500;
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .intro-copy {
+      max-width: 540px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.85fr);
+      background: var(--white);
+      border: 1px solid var(--line);
+      box-shadow: 0 14px 36px rgb(22 52 45 / 7%);
+      animation: arrive 550ms 70ms ease-out both;
+    }
+
+    .entry-panel, .result-panel { min-width: 0; padding: 30px; }
+
+    .result-panel {
+      border-left: 1px solid var(--line);
+      background: #f8faf7;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 26px;
+    }
+
+    h2 {
+      margin-bottom: 5px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 23px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    .section-subtitle {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .capacity-field { width: 132px; flex: 0 0 auto; }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #42564e;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      min-width: 0;
+      height: 42px;
+      padding: 0 11px;
+      color: var(--ink);
+      background: white;
+      border: 1px solid #cbd7cf;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    input:focus-visible, button:focus-visible {
+      outline: 3px solid #94b9a7;
+      outline-offset: 2px;
+    }
+
+    .file-head, .file-row {
+      display: grid;
+      grid-template-columns: minmax(120px, 1fr) 100px 112px 36px;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .file-head {
+      padding: 0 0 9px;
+      color: #748078;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .file-row {
+      margin-bottom: 10px;
+      animation: arrive 260ms ease-out both;
+    }
+
+    .remove-button {
+      width: 36px;
+      height: 42px;
+      color: #68776f;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .remove-button:hover { color: var(--red); background: #fbefed; }
+
+    .row-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid #e7ece8;
+    }
+
+    .button {
+      min-height: 42px;
+      padding: 0 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      transition: background-color 150ms ease, transform 150ms ease;
+    }
+
+    .button:active { transform: translateY(1px); }
+
+    .button-secondary {
+      color: var(--green);
+      background: white;
+      border-color: #b9ccc0;
+    }
+
+    .button-secondary:hover { background: #eff6f1; }
+
+    .button-primary {
+      color: white;
+      background: var(--green);
+    }
+
+    .button-primary:hover { background: #10533f; }
+    .button-primary:disabled { opacity: 0.65; cursor: wait; }
+
+    .message {
+      min-height: 20px;
+      margin: 12px 0 0;
+      color: var(--red);
+      font-size: 13px;
+    }
+
+    .result-placeholder {
+      min-height: 250px;
+      display: grid;
+      align-content: center;
+      justify-items: start;
+      color: var(--muted);
+    }
+
+    .placeholder-mark {
+      width: 44px;
+      height: 44px;
+      margin-bottom: 18px;
+      display: grid;
+      place-items: center;
+      color: var(--green);
+      background: #e8f1e9;
+      border-radius: 50%;
+      font-size: 20px;
+    }
+
+    .result-placeholder strong { margin-bottom: 7px; color: var(--ink); }
+    .result-placeholder p { max-width: 240px; margin-bottom: 0; font-size: 13px; line-height: 1.55; }
+    .results[hidden], .result-placeholder[hidden] { display: none; }
+
+    .score-label {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .score {
+      margin-bottom: 22px;
+      color: var(--green-dark);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 50px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .score span { color: var(--muted); font-family: "Trebuchet MS", "Segoe UI", sans-serif; font-size: 14px; }
+
+    .storage-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 9px;
+      color: #52645b;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .meter {
+      height: 8px;
+      overflow: hidden;
+      background: #dfe8e1;
+      border-radius: 10px;
+    }
+
+    .meter-fill {
+      width: 0;
+      height: 100%;
+      background: var(--green);
+      border-radius: inherit;
+      transition: width 450ms ease-out;
+    }
+
+    .metrics {
+      margin: 18px 0 25px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .metric { padding: 13px 8px 13px 0; }
+    .metric + .metric { padding-left: 15px; border-left: 1px solid var(--line); }
+    .metric strong { display: block; margin-bottom: 4px; font-size: 17px; }
+    .metric span { color: var(--muted); font-size: 11px; }
+
+    .selected-title {
+      margin-bottom: 11px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .selected-list { margin: 0; padding: 0; list-style: none; }
+
+    .selected-list li {
+      padding: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid #e6ece7;
+      font-size: 12px;
+    }
+
+    .selected-list li span:first-child { overflow-wrap: anywhere; font-weight: 700; }
+    .selected-list li span:last-child { flex: 0 0 auto; color: var(--muted); }
+    .empty-selection { color: var(--muted); font-size: 13px; }
+
+    @keyframes arrive {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 800px) {
+      main { padding-top: 38px; }
+      .workspace { grid-template-columns: 1fr; }
+      .result-panel { border-top: 1px solid var(--line); border-left: 0; }
+      .result-placeholder { min-height: 190px; }
+    }
+
+    @media (max-width: 520px) {
+      main { width: min(100% - 28px, 1180px); padding-top: 32px; }
+      .topbar { padding: 0 16px; }
+      .top-note { font-size: 11px; }
+      .entry-panel, .result-panel { padding: 21px 17px; }
+      .section-heading { flex-direction: column; }
+      .capacity-field { width: 100%; }
+      .file-head, .file-row { grid-template-columns: minmax(0, 1fr) 58px 68px 26px; gap: 5px; }
+      .file-head { font-size: 9px; }
+      .file-row input { height: 40px; padding: 0 7px; font-size: 13px; }
+      .remove-button { width: 30px; height: 40px; }
+      .row-actions { align-items: stretch; flex-direction: column; }
+      .row-actions .button { width: 100%; }
+    }
+
+    @media (max-width: 360px) {
+      .top-note { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">▦</span> Fieldnote <span> / Storage</span></div>
+    <div class="top-note">0/1 knapsack · dynamic programming</div>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">Make room for what matters</p>
+      <h1 id="page-title">A smarter plan for your storage.</h1>
+      <p class="intro-copy">Set your capacity, rank the files by importance, and find the combination that makes the most of every gigabyte.</p>
+    </section>
+
+    <section class="workspace" aria-label="Storage optimization workspace">
+      <form class="entry-panel" id="optimizer-form">
+        <div class="section-heading">
+          <div>
+            <h2>Storage plan</h2>
+            <p class="section-subtitle">Add files and their importance score.</p>
+          </div>
+          <div class="capacity-field">
+            <label for="capacity">Capacity (GB)</label>
+            <input id="capacity" name="capacity" type="number" min="0" step="1" value="120" required>
+          </div>
+        </div>
+
+        <div class="file-head" aria-hidden="true">
+          <span>File name</span><span>Size (GB)</span><span>Importance</span><span></span>
+        </div>
+        <div id="file-rows" aria-live="polite"></div>
+
+        <div class="row-actions">
+          <button class="button button-secondary" id="add-file" type="button"><span aria-hidden="true">＋</span> Add a file</button>
+          <button class="button button-primary" id="optimize" type="submit">Find best plan <span aria-hidden="true">→</span></button>
+        </div>
+        <p class="message" id="message" role="alert"></p>
+      </form>
+
+      <section class="result-panel" aria-labelledby="result-heading" aria-live="polite">
+        <div class="section-heading">
+          <div>
+            <h2 id="result-heading">Your best fit</h2>
+            <p class="section-subtitle">The highest-value set within capacity.</p>
+          </div>
+        </div>
+
+        <div class="result-placeholder" id="placeholder">
+          <span class="placeholder-mark" aria-hidden="true">↗</span>
+          <strong>Your plan will appear here</strong>
+          <p>Enter your files and run the optimizer to see the best combination.</p>
+        </div>
+
+        <div class="results" id="results" hidden>
+          <p class="score-label">Maximum importance</p>
+          <div class="score"><span id="importance-score">0</span> <span>points</span></div>
+          <div class="storage-label"><span>Storage used</span><span id="storage-total">0 / 0 GB</span></div>
+          <div class="meter" role="progressbar" aria-label="Storage used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="meter-fill" id="meter-fill"></div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><strong id="used-metric">0 GB</strong><span>Used</span></div>
+            <div class="metric"><strong id="remaining-metric">0 GB</strong><span>Remaining</span></div>
+          </div>
+          <h3 class="selected-title">Selected files</h3>
+          <ul class="selected-list" id="selected-list"></ul>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const rows = document.querySelector("#file-rows");
+    const form = document.querySelector("#optimizer-form");
+    const message = document.querySelector("#message");
+    const results = document.querySelector("#results");
+    const placeholder = document.querySelector("#placeholder");
+    let rowNumber = 0;
+
+    function addRow(name = "", size = "", importance = "") {
+      rowNumber += 1;
+      const row = document.createElement("div");
+      row.className = "file-row";
+      row.innerHTML = `
+        <div><label class="visually-hidden" for="file-name-${rowNumber}">File name</label><input id="file-name-${rowNumber}" name="file-name" type="text" placeholder="e.g. Project archive" value="${escapeAttribute(name)}" required></div>
+        <div><label class="visually-hidden" for="file-size-${rowNumber}">Size in GB</label><input id="file-size-${rowNumber}" name="file-size" type="number" min="1" step="1" placeholder="0" value="${escapeAttribute(size)}" required></div>
+        <div><label class="visually-hidden" for="file-importance-${rowNumber}">Importance</label><input id="file-importance-${rowNumber}" name="file-importance" type="number" min="0" step="1" placeholder="0" value="${escapeAttribute(importance)}" required></div>
+        <button class="remove-button" type="button" aria-label="Remove file row">×</button>`;
+      row.querySelector(".remove-button").addEventListener("click", () => {
+        row.remove();
+        if (!rows.children.length) addRow();
+      });
+      rows.append(row);
+    }
+
+    function escapeAttribute(value) {
+      return String(value).replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
+    document.querySelector("#add-file").addEventListener("click", () => {
+      addRow();
+      rows.lastElementChild.querySelector("input").focus();
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      message.textContent = "";
+      if (!form.reportValidity()) return;
+
+      const files = [...rows.querySelectorAll(".file-row")].map((row) => ({
+        name: row.querySelector('[name="file-name"]').value.trim(),
+        size: Number(row.querySelector('[name="file-size"]').value),
+        importance: Number(row.querySelector('[name="file-importance"]').value),
+      }));
+      const capacity = Number(document.querySelector("#capacity").value);
+      const button = document.querySelector("#optimize");
+      button.disabled = true;
+      button.firstChild.textContent = "Calculating... ";
+
+      try {
+        const response = await fetch("/api/optimize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ capacity, files }),
+        });
+        const responseText = await response.text();
+        let data;
+        try {
+          data = responseText ? JSON.parse(responseText) : null;
+        } catch {
+          throw new Error("The optimizer returned an invalid response. Open this page from http://127.0.0.1:8000.");
+        }
+        if (!response.ok) throw new Error(data?.error || "Could not calculate a plan.");
+        if (!data) throw new Error("The optimizer returned an empty response. Open this page from http://127.0.0.1:8000.");
+        renderResult(data);
+      } catch (error) {
+        message.textContent = error.message || "Could not reach the optimizer. Check that the local server is running.";
+      } finally {
+        button.disabled = false;
+        button.firstChild.textContent = "Find best plan ";
+      }
+    });
+
+    function renderResult(data) {
+      document.querySelector("#importance-score").textContent = data.maximumImportance;
+      document.querySelector("#storage-total").textContent = `${data.totalSize} / ${data.capacity} GB`;
+      document.querySelector("#used-metric").textContent = `${data.totalSize} GB`;
+      document.querySelector("#remaining-metric").textContent = `${data.remainingStorage} GB`;
+      const percent = data.capacity === 0 ? 0 : Math.round(data.totalSize / data.capacity * 100);
+      const meter = document.querySelector(".meter");
+      meter.setAttribute("aria-valuenow", String(percent));
+      document.querySelector("#meter-fill").style.width = `${percent}%`;
+
+      const list = document.querySelector("#selected-list");
+      list.replaceChildren();
+      if (data.selectedFiles.length === 0) {
+        const empty = document.createElement("li");
+        empty.className = "empty-selection";
+        empty.textContent = "No files fit within this capacity.";
+        list.append(empty);
+      } else {
+        for (const file of data.selectedFiles) {
+          const item = document.createElement("li");
+          const name = document.createElement("span");
+          const detail = document.createElement("span");
+          name.textContent = file.name;
+          detail.textContent = `${file.size} GB · ${file.importance} pts`;
+          item.append(name, detail);
+          list.append(item);
+        }
+      }
+      placeholder.hidden = true;
+      results.hidden = false;
+    }
+
+    addRow("Project archive", 45, 9);
+    addRow("Photo library", 30, 7);
+    addRow("Old backups", 70, 5);
+  </script>
+  <style>
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      clip-path: inset(50%);
+    }
+  </style>
+</body>
+</html>
